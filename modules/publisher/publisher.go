@@ -4,14 +4,13 @@ import (
 	"encoding/json"
 
 	"SenderS/env"
-	"SenderS/models"
 	"github.com/streadway/amqp"
 )
 
-func Publisher(ch *amqp.Channel, ms models.Message) {
+func Publisher(ch *amqp.Channel, ms interface{}) error {
 	body, err := json.Marshal(ms)
 	if err != nil {
-		panic(err)
+		return err
 	}
 	err = ch.Publish(env.Exchange, "*.email.#", false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
@@ -19,6 +18,7 @@ func Publisher(ch *amqp.Channel, ms models.Message) {
 		Body:         body,
 	})
 	if err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
