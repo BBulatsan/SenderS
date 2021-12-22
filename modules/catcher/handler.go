@@ -1,4 +1,4 @@
-package cather
+package catcher
 
 import "fmt"
 

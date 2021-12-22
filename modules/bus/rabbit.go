@@ -2,7 +2,7 @@ package bus
 
 import (
 	"SenderS/env"
-	"SenderS/modules/cather"
+	"SenderS/modules/catcher"
 	"github.com/streadway/amqp"
 )
 
@@ -14,13 +14,15 @@ type RConn struct {
 
 func (r *RConn) InitRabbit() {
 	err := r.conn(env.HostRebbit)
-	cather.HandlerError(err)
+	catcher.HandlerError(err)
 	err = r.addQueue(env.Queue)
-	cather.HandlerError(err)
+	catcher.HandlerError(err)
 	err = r.addExchange(env.Exchange)
-	cather.HandlerError(err)
-	err = r.addBind("*.email.#", env.Exchange)
-	cather.HandlerError(err)
+	catcher.HandlerError(err)
+	for _, b := range Bindings() {
+		err = r.addBind(b, env.Exchange)
+		catcher.HandlerError(err)
+	}
 }
 
 func (r *RConn) conn(url string) error {

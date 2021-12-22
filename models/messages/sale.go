@@ -10,15 +10,16 @@ import (
 	"github.com/streadway/amqp"
 )
 
-type MessageOperation struct {
-	Id        int
-	User      string
-	Email     string
-	Operation string
+type MessageSale struct {
+	Id       int
+	User     string
+	Email    string
+	Percent  uint8
+	PromoCod string
 }
 
-func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
-	var dat MessageOperation
+func TemplateSale(ms amqp.Delivery) (bytes.Buffer, []string, error) {
+	var dat MessageSale
 	var body bytes.Buffer
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
@@ -31,12 +32,12 @@ func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
 	if err != nil {
 		return bytes.Buffer{}, nil, nil
 	}
-	tmpl, err := template.ParseFiles("template/operation.html")
+	tmpl, err := template.ParseFiles("template/sale.html")
 	if err != nil {
 		return bytes.Buffer{}, nil, nil
 	}
 
-	body.Write([]byte(fmt.Sprintf("Subject: This is text about %s  \n%s\n\n", dat.Operation, mimeHeaders)))
+	body.Write([]byte(fmt.Sprintf("Subject: You have a new Sale!  \n%s\n\n", mimeHeaders)))
 	err = tmpl.Execute(&body, dat)
 	if err != nil {
 		return bytes.Buffer{}, nil, nil
@@ -47,12 +48,14 @@ func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
 	return body, to, nil
 }
 
-func NewMessageOperation(user string, email string, operation string) MessageOperation {
+func NewMessageSale(user string, email string, percent uint8) MessageSale {
 	id := int(time.Since(time.Now()))
-	return MessageOperation{
-		Id:        id,
-		User:      user,
-		Email:     email,
-		Operation: operation,
+	cod := "Goods"
+	return MessageSale{
+		Id:       id,
+		User:     user,
+		Email:    email,
+		Percent:  percent,
+		PromoCod: cod,
 	}
 }

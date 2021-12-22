@@ -7,12 +7,17 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func Publisher(ch *amqp.Channel, ms interface{}) error {
-	body, err := json.Marshal(ms)
+type Message struct {
+	Rk   string
+	Mess interface{}
+}
+
+func (m *Message) Publisher(ch *amqp.Channel) error {
+	body, err := json.Marshal(m.Mess)
 	if err != nil {
 		return err
 	}
-	err = ch.Publish(env.Exchange, "*.email.#", false, false, amqp.Publishing{
+	err = ch.Publish(env.Exchange, m.Rk, false, false, amqp.Publishing{
 		DeliveryMode: amqp.Persistent,
 		ContentType:  "text/plain",
 		Body:         body,
