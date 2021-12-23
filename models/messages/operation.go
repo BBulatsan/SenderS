@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"html/template"
 	"time"
-
-	"github.com/streadway/amqp"
 )
 
 type MessageOperation struct {
@@ -17,18 +15,12 @@ type MessageOperation struct {
 	Operation string
 }
 
-func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
+func TemplateOperation(ms []byte) (bytes.Buffer, []string, error) {
 	var dat MessageOperation
 	var body bytes.Buffer
 	var tmpl *template.Template
 
-	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-
-	err := json.Unmarshal(ms.Body, &dat)
-	if err != nil {
-		return bytes.Buffer{}, nil, nil
-	}
-	err = ms.Ack(true)
+	err := json.Unmarshal(ms, &dat)
 	if err != nil {
 		return bytes.Buffer{}, nil, nil
 	}

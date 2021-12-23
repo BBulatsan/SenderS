@@ -18,9 +18,14 @@ func ReaderSender(ch <-chan amqp.Delivery) error {
 	for ms := range ch {
 		switch ms.RoutingKey {
 		case bus.Operation:
-			body, to, err := messages.TemplateOperation(ms)
+			body, to, err := messages.TemplateOperation(ms.Body)
 			if err != nil {
 				return err
+			} else {
+				err = ms.Ack(true)
+				if err != nil {
+					return nil
+				}
 			}
 			err = smtp.SendMail(addr, auth, env.From, to, body.Bytes())
 			if err != nil {
@@ -28,9 +33,14 @@ func ReaderSender(ch <-chan amqp.Delivery) error {
 			}
 			fmt.Println("Message send!")
 		case bus.Sale:
-			body, to, err := messages.TemplateSale(ms)
+			body, to, err := messages.TemplateSale(ms.Body)
 			if err != nil {
 				return err
+			} else {
+				err = ms.Ack(true)
+				if err != nil {
+					return nil
+				}
 			}
 			err = smtp.SendMail(addr, auth, env.From, to, body.Bytes())
 			if err != nil {
