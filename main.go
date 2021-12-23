@@ -14,14 +14,17 @@ func main() {
 	RConn := bus.RConn{}
 	RConn.InitRabbit()
 
-	messageSale := messages.NewMessageSale("Bohdan", "bogdan315991@gmail.com", 20)
-	message := publisher.Message{Rk: "*.test.#", Mess: messageSale}
-	//messageOperation := messages.NewMessageOperation("Bohdan", "bogdan315991@gmail.com", "registration")
-	//message := publisher.Message{Rk: bus.Operation, Mess: messageOperation}
 	//messageSale := messages.NewMessageSale("Bohdan", "bogdan315991@gmail.com", 20)
+	//message := publisher.Message{Rk: "*.test.#", Mess: messageSale}
+	messageOperation := messages.NewMessageOperation("Bohdan", "bogdan315991@gmail.com", "registration")
+	message := publisher.Message{Rk: bus.Operation, Mess: messageOperation}
+	message2 := publisher.Message{Rk: bus.Operation, Mess: messageOperation}
+	//messageSale := messages.NewMessageSale("Bohdan", "bogdan315991@gmail.com", 25)
 	//message := publisher.Message{Rk: bus.Sale, Mess: messageSale}
 
 	err := message.Publisher(RConn.Conn)
+	catcher.HandlerError(err)
+	err = message2.Publisher(RConn.Conn)
 	catcher.HandlerError(err)
 
 	err = RConn.Consume()

@@ -20,6 +20,7 @@ type MessageOperation struct {
 func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
 	var dat MessageOperation
 	var body bytes.Buffer
+	var tmpl *template.Template
 
 	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 
@@ -31,11 +32,16 @@ func TemplateOperation(ms amqp.Delivery) (bytes.Buffer, []string, error) {
 	if err != nil {
 		return bytes.Buffer{}, nil, nil
 	}
-	tmpl, err := template.ParseFiles("template/operation.html")
-	if err != nil {
-		return bytes.Buffer{}, nil, nil
-	}
+	if cache.operation != nil {
+		tmpl = cache.operation
 
+	} else {
+		tmpl, err = template.ParseFiles("template/operation.html")
+		if err != nil {
+			return bytes.Buffer{}, nil, nil
+		}
+		cache.operation = tmpl
+	}
 	body.Write([]byte(fmt.Sprintf("Subject: This is text about %s  \n%s\n\n", dat.Operation, mimeHeaders)))
 	err = tmpl.Execute(&body, dat)
 	if err != nil {

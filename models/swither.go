@@ -13,6 +13,7 @@ import (
 
 func ReaderSender(ch <-chan amqp.Delivery) error {
 	auth := smtp.PlainAuth("", env.From, env.Pass, env.SmtpServ)
+	addr := env.SmtpServ + ":" + env.SmtpPort
 
 	for ms := range ch {
 		switch ms.RoutingKey {
@@ -21,7 +22,7 @@ func ReaderSender(ch <-chan amqp.Delivery) error {
 			if err != nil {
 				return err
 			}
-			err = smtp.SendMail(env.SmtpServ+":"+env.SmtpPort, auth, env.From, to, body.Bytes())
+			err = smtp.SendMail(addr, auth, env.From, to, body.Bytes())
 			if err != nil {
 				return err
 			}
@@ -31,7 +32,7 @@ func ReaderSender(ch <-chan amqp.Delivery) error {
 			if err != nil {
 				return err
 			}
-			err = smtp.SendMail(env.SmtpServ+":"+env.SmtpPort, auth, env.From, to, body.Bytes())
+			err = smtp.SendMail(addr, auth, env.From, to, body.Bytes())
 			if err != nil {
 				return err
 			}
