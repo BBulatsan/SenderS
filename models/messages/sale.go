@@ -28,12 +28,11 @@ func TemplateSale(ms []byte) (bytes.Buffer, []string, error) {
 	if cache.sale != nil {
 		tmpl = cache.sale
 	} else {
-		tmpl, err := template.ParseFiles("template/sale.html")
+		tmpl, err = template.ParseFiles("template/sale.html")
 		if err != nil {
 			return bytes.Buffer{}, nil, nil
 		}
 		cache.sale = tmpl
-
 	}
 
 	body.Write([]byte(fmt.Sprintf("Subject: You have a new Sale!  \n%s\n\n", mimeHeaders)))

@@ -26,7 +26,6 @@ func TemplateOperation(ms []byte) (bytes.Buffer, []string, error) {
 	}
 	if cache.operation != nil {
 		tmpl = cache.operation
-
 	} else {
 		tmpl, err = template.ParseFiles("template/operation.html")
 		if err != nil {

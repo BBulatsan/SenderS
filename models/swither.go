@@ -11,7 +11,7 @@ import (
 	"github.com/streadway/amqp"
 )
 
-func ReaderSender(ch <-chan amqp.Delivery) error {
+func ReaderSenderRabbit(ch <-chan amqp.Delivery) error {
 	auth := smtp.PlainAuth("", env.From, env.Pass, env.SmtpServ)
 	addr := env.SmtpServ + ":" + env.SmtpPort
 

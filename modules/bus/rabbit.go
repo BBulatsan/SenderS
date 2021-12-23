@@ -23,6 +23,8 @@ func (r *RConn) InitRabbit() {
 		err = r.addBind(b, env.Exchange)
 		catcher.HandlerError(err)
 	}
+	err = r.Consume()
+	catcher.HandlerError(err)
 }
 
 func (r *RConn) conn(url string) error {
