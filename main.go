@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	"SenderS/env"
 	"SenderS/models"
 	"SenderS/modules/bus"
 	"SenderS/modules/dbs"
@@ -14,8 +15,15 @@ func main() {
 	RConn.InitRabbit()
 	DConn := dbs.DbConn{}
 	DConn.InitDb()
-	go models.ReaderSenderRabbit(RConn.MessagesChan)
-	go DConn.CheckTakeMessages()
+	switch env.Mode {
+	case "Rabbit":
+		go models.ReaderSenderRabbit(RConn.MessagesChan)
+	case "DB":
+		go DConn.CheckTakeMessages()
+	default:
+		go models.ReaderSenderRabbit(RConn.MessagesChan)
+		go DConn.CheckTakeMessages()
+	}
 
 	//messageSale := messages.NewMessageSale("Bohdan", "bogdan315991@gmail.com", 20)
 	//message := publisher.Message{Rk: "*.test.#", Mess: messageSale}
