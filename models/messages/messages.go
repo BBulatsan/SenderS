@@ -6,7 +6,9 @@ const (
 	mimeHeaders = "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 )
 
-type Message interface {
+type Message struct {
+	Rk   string
+	Body []byte
 }
 
 type caches struct {

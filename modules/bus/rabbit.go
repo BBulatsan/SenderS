@@ -1,7 +1,10 @@
 package bus
 
 import (
+	"fmt"
+
 	"SenderS/env"
+	"SenderS/models/messages"
 	"SenderS/modules/catcher"
 	"github.com/streadway/amqp"
 )
@@ -80,4 +83,29 @@ func (r *RConn) Consume() error {
 	}
 	r.MessagesChan = messageChannel
 	return nil
+}
+
+func ReaderRabbit(ch <-chan amqp.Delivery, chIn chan messages.Message) {
+	for ms := range ch {
+		nack := false
+		for _, i := range Bindings() {
+			if i == ms.RoutingKey {
+				err := ms.Ack(true)
+				if err != nil {
+					catcher.HandlerError(err)
+				}
+				chIn <- messages.Message{Rk: ms.RoutingKey, Body: ms.Body}
+				nack = false
+				break
+			} else {
+				nack = true
+			}
+		}
+		if nack == true {
+			fmt.Println("Unknown rk")
+			err := ms.Nack(false, false)
+			catcher.HandlerError(err)
+		}
+
+	}
 }
