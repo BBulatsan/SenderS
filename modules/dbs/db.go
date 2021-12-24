@@ -33,7 +33,7 @@ type item struct {
 //CREATE TABLE IF NOT EXISTS messages (id INTEGER PRIMARY KEY, 'RK' message_text, Body message_text,Type message_text, Read TINYINT(1));
 
 func (d *DbConn) InitDb() {
-	db, err := sql.Open("sqlite3", "./modules/dbs/dbs/item.db")
+	db, err := sql.Open("sqlite3", "./modules/dbs/dbstore/item.db")
 	if err != nil {
 		panic(err)
 	}
